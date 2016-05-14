@@ -9,44 +9,52 @@ pub struct Position {
 
 impl Position {
     pub fn new(x: i32, y: i32) -> Position {
-        Position {
-            x: x,
-            y: y
-        }
+        Position { x: x, y: y }
     }
 }
 
 pub struct Actor {
     position: Position,
     texture: Texture,
-    move_delta: i32,
 }
 
 impl Actor {
-    pub fn at_position(position: Position) -> Actor {
+    pub fn new(position: Position, texture: Texture) -> Actor {
         Actor {
-            position: position
+            position: position,
+            texture: texture,
         }
-    }
-
-    pub fn render(&self, renderer: &mut Renderer) {
-        renderer.copy(self.texture,
-                      None,
-                      Some(Rect::new(self.position.x, self.position.y, 128, 128)));
     }
 }
 
 
-        let mut texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, 256, 256)
-                                  .unwrap();
-        texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                   for y in 0..256 {
-                       for x in 0..256 {
-                           let offset = y * pitch + x * 3;
-                           buffer[offset + 0] = x as u8;
-                           buffer[offset + 1] = y as u8;
-                           buffer[offset + 2] = 0;
-                       }
-                   }
-               })
-               .unwrap();
+pub struct ActorBuilder {
+    position: Option<Position>,
+    texture: Option<Texture>,
+}
+
+impl ActorBuilder {
+    pub fn new() -> ActorBuilder {
+        ActorBuilder {
+            position: None,
+            texture: None,
+        }
+    }
+
+    pub fn position(&mut self, position: Position) -> &mut Self {
+        self.position = Some(position);
+        self
+    }
+
+    pub fn texture(&mut self, texture: Texture) -> &mut Self {
+        self.texture = Some(texture);
+        self
+    }
+
+    pub fn build(&self) -> Actor {
+        Actor {
+            position: self.position.unwrap(),
+            texture: self.texture.unwrap().clone(),
+        }
+    }
+}

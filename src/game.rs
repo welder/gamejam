@@ -6,6 +6,7 @@ use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use actor::*;
 
 /// Struct for maintaining internal game state
 pub struct Game {
@@ -32,7 +33,27 @@ impl Game {
 
         // Initialize variables.
         let mut ticks = 0;
-        let mut prev_keys = HashSet::new();
+
+        // Create the texture for the player.
+        let mut format = PixelFormatEnum::RGB24;
+        let mut texture = renderer.create_texture_streaming(format, 256, 256)
+                                  .unwrap();
+        texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
+                   for y in 0..256 {
+                       for x in 0..256 {
+                           let offset = y * pitch + x * 3;
+                           buffer[offset + 0] = x as u8;
+                           buffer[offset + 1] = y as u8;
+                           buffer[offset + 2] = 0;
+                       }
+                   }
+               })
+               .unwrap();
+
+        let actor = ActorBuilder::new()
+                        .position(Position::new(100, 100))
+                        .texture(texture)
+                        .build();
 
         let mut event_pump = context.event_pump().unwrap();
         'running: loop {
@@ -42,10 +63,10 @@ impl Game {
                     Event::KeyDown { keycode: Some(keycode), .. } => {
                         match keycode {
                             Keycode::Escape => break 'running,
-                            Keycode::Up => player.pos.y -= move_delta,
-                            Keycode::Down => player.pos.y += move_delta,
-                            Keycode::Left => player.pos.x -= move_delta,
-                            Keycode::Right => player.pos.x += move_delta,
+                            // Keycode::Up => player.pos.y -= move_delta,
+                            // Keycode::Down => player.pos.y += move_delta,
+                            // Keycode::Left => player.pos.x -= move_delta,
+                            // Keycode::Right => player.pos.x += move_delta,
                             _ => {}
                         }
                     }

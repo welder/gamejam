@@ -65,8 +65,8 @@ impl GridBuilder {
 
     pub fn build(&self) -> Grid {
         Grid {
-            values: self.values.unwrap(),
-            tileset: self.tileset,
+            values: self.values.clone().unwrap(),
+            tileset: self.tileset.clone(),
             view: self.view.unwrap(),
             tile_width: self.tile_width.unwrap(),
             tile_height: self.tile_height.unwrap(),

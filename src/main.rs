@@ -1,5 +1,6 @@
 extern crate sdl2;
 
+mod actor;
 mod game;
 mod grid;
 use game::Game;
