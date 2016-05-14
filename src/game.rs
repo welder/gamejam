@@ -8,7 +8,7 @@ use sdl2::keyboard::Keycode;
 pub struct Game {
     title: String,
     width: u32,
-    height: u32,    
+    height: u32,
 }
 
 impl Game {
@@ -28,11 +28,8 @@ impl Game {
         'running: loop {
             for event in event_pump.poll_iter() {
                 match event {
-                    Event::Quit {..}
-                    | Event::KeyDown { keycode: Some(Keycode::Escape), ..} =>
-                    {
-                        break 'running
-                    },
+                    Event::Quit { .. } |
+                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
                     _ => {}
                 }
             }
@@ -59,6 +56,7 @@ impl Game {
         self.height
     }
 
+    /// Update the title with position and size information
     fn update_title(&self, ticks: &mut u32, renderer: &mut Renderer) {
         let mut window = renderer.window_mut().unwrap();
         let position = window.position();
@@ -74,4 +72,3 @@ impl Game {
         *ticks += 1
     }
 }
-
