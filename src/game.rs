@@ -16,19 +16,15 @@ impl Game {
     pub fn new() -> Game {
         Game {
             title: "Endless Tactics".to_owned(),
-            width: 640,
-            height: 480,
+            width: 800,
+            height: 600,
         }
     }
 
     /// Run the game
     pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
-        renderer.set_draw_color(Color::RGB(255, 0, 0));
-        renderer.clear();
-        renderer.present();
-
+        let mut ticks = 0;
         let mut event_pump = context.event_pump().unwrap();
-
         'running: loop {
             for event in event_pump.poll_iter() {
                 match event {
@@ -40,7 +36,25 @@ impl Game {
                     _ => {}
                 }
             }
-            // The rest of the game loop goes here...
+
+            {
+                let mut window = renderer.window_mut().unwrap();
+                let position = window.position();
+                let size = window.size();
+                let title = format!("{} - pos({}x{}) - size({}x{}) - ticks({})",
+                                    self.title(),
+                                    position.0,
+                                    position.1,
+                                    size.0,
+                                    size.1,
+                                    ticks);
+                window.set_title(&title).unwrap();
+                ticks = ticks + 1;
+            }
+
+            renderer.set_draw_color(Color::RGB(0, 0, 0));
+            renderer.clear();
+            renderer.present();
         }
     }
 
