@@ -26,8 +26,13 @@ impl Game {
 
     /// Run the game
     pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
+        // Make the renderer default to black.
         renderer.set_draw_color(Color::RGB(0, 0, 0));
         let mut ticks = 0;
+
+        // Initialize variables.
+        let mut ticks = 0;
+        let mut prev_keys = HashSet::new();
 
         let mut event_pump = context.event_pump().unwrap();
         'running: loop {
