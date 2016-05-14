@@ -1,5 +1,8 @@
 use sdl2::Sdl;
 use sdl2::render::Renderer;
+use sdl2::pixels::Color;
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
 
 /// Struct for maintaining internal game state
 pub struct Game {
@@ -19,8 +22,26 @@ impl Game {
     }
 
     /// Run the game
-    pub fn run(self, _: Sdl, _: Renderer) {
-        unimplemented!();
+    pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
+        renderer.set_draw_color(Color::RGB(255, 0, 0));
+        renderer.clear();
+        renderer.present();
+
+        let mut event_pump = context.event_pump().unwrap();
+
+        'running: loop {
+            for event in event_pump.poll_iter() {
+                match event {
+                    Event::Quit {..}
+                    | Event::KeyDown { keycode: Some(Keycode::Escape), ..} =>
+                    {
+                        break 'running
+                    },
+                    _ => {}
+                }
+            }
+            // The rest of the game loop goes here...
+        }
     }
 
     /// Get a reference to the game title

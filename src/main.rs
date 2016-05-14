@@ -4,17 +4,17 @@ mod game;
 use game::Game;
 
 fn main() {
-    let game     = Game::new();
-    let context  = sdl2::init().unwrap();
-    let renderer = context.video()
-                          .unwrap()
-                          .window(game.title(), game.width(), game.height())
-                          .position_centered()
-                          .build()
-                          .unwrap()
-                          .renderer()
-                          .build()
-                          .unwrap();
+    let game         = Game::new();
+    let mut context  = sdl2::init().unwrap();
+    let mut renderer = context.video()
+                              .unwrap()
+                              .window(game.title(), game.width(), game.height())
+                              .position_centered()
+                              .build()
+                              .unwrap()
+                              .renderer()
+                              .build()
+                              .unwrap();
 
-    game.run(context, renderer);
+    game.run(&mut context, &mut renderer);
 }
