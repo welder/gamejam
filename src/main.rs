@@ -1,8 +1,6 @@
 extern crate sdl2;
-extern crate tiled;
 
 mod game;
-mod grid;
 use game::Game;
 
 fn main() {
@@ -19,9 +17,6 @@ fn main() {
                               .present_vsync()
                               .build()
                               .unwrap();
-
-    let map = grid::open_tiles();
-    println!("{:?}", map);
 
     game.run(&mut context, &mut renderer);
 }
