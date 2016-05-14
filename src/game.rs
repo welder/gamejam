@@ -23,6 +23,11 @@ pub struct Actor {
     pos: Position,
 }
 
+pub struct Direction {
+    x_dir: i32,
+    y_dir: i32
+}
+
 impl Game {
     /// Create a new game with the default parameters
     pub fn new() -> Game {
@@ -60,13 +65,12 @@ impl Game {
         //positioning variables
         let move_delta : i32 = 32;
 
-        let starting_position = Position {
-            x: 100,
-            y: 100,
+        let mut player_one = Actor{
+            pos: Position {x: 100, y: 100}
         };
 
-        let mut player = Actor{
-            pos: starting_position
+        let mut player_two = Actor{
+            pos: Position {x: 500, y: 100}
         };
 
         let mut prev_keys = HashSet::new();
@@ -91,10 +95,10 @@ impl Game {
                     Event::KeyDown { keycode, .. } => {
                         match keycode {
                             Some(Keycode::Escape) => break 'running,
-                            Some(Keycode::Up) => player.pos.y -= move_delta,
-                            Some(Keycode::Down) => player.pos.y += move_delta,
-                            Some(Keycode::Left) => player.pos.x -= move_delta,
-                            Some(Keycode::Right) => player.pos.x += move_delta,
+                            Some(Keycode::W) => player_one.pos.y -= move_delta,
+                            Some(Keycode::S) => player_one.pos.y += move_delta,
+                            Some(Keycode::Up) => player_two.pos.y -= move_delta,
+                            Some(Keycode::Down) => player_two.pos.y += move_delta,
                             _ => {}
                         }
                     } // do the thing
@@ -106,7 +110,9 @@ impl Game {
             renderer.clear();
             
             //place texture within purview of renderer
-            renderer.copy(&texture, None, Some(Rect::new(player.pos.x, player.pos.y, 128, 128)));
+            renderer.copy(&texture, None, Some(Rect::new(player_one.pos.x, player_one.pos.y, 16, 128)));
+
+            renderer.copy(&texture, None, Some(Rect::new(player_two.pos.x, player_two.pos.y, 16, 128)));
 
             renderer.present();
         }
@@ -125,6 +131,14 @@ impl Game {
     /// Get the height of the game window
     pub fn height(&self) -> u32 {
         self.height
+    }
+
+    fn detect_collision(){
+
+    }
+
+    fn reflect(ball_direction: &mut Direction) {
+        ball_direction.x_dir *= -1;
     }
 
     /// Update the title with position and size information
