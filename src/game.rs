@@ -1,7 +1,9 @@
 use std::collections::HashSet;
 use sdl2::Sdl;
 use sdl2::render::Renderer;
+use sdl2::rect::Rect;
 use sdl2::pixels::Color;
+use sdl2::pixels::PixelFormatEnum;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
@@ -10,6 +12,15 @@ pub struct Game {
     title: String,
     width: u32,
     height: u32,
+}
+
+pub struct Position {
+    x: i32,
+    y: i32,
+}
+
+pub struct Actor {
+    pos: Position,
 }
 
 impl Game {
@@ -29,16 +40,39 @@ impl Game {
 
         let mut event_pump = context.event_pump().unwrap();
 
-        let mut prev_keys = HashSet::new();
-        'running: loop {
-            for event in event_pump.poll_iter() {
-                match event {
-                    Event::Quit { .. } |
-                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
-                    _ => {}
+        //begin placeholder square definition
+        let mut texture = renderer.create_texture_streaming(
+            PixelFormatEnum::RGB24, 256, 256).unwrap();
+        // Create a red-green gradient
+
+        texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
+            for y in 0..256 {
+                for x in 0..256 {
+                    let offset = y*pitch + x*3;
+                    buffer[offset + 0] = x as u8;
+                    buffer[offset + 1] = y as u8;
+                    buffer[offset + 2] = 0;
                 }
             }
+        }).unwrap();
+        //end temporary square definition
 
+        //positioning variables
+        let move_delta : i32 = 32;
+
+        let starting_position = Position {
+            x: 100,
+            y: 100,
+        };
+
+        let mut player = Actor{
+            pos: starting_position
+        };
+
+        let mut prev_keys = HashSet::new();
+        'running: loop {
+
+            //keyboard detection
             let keys = event_pump.keyboard_state().pressed_scancodes().filter_map(Keycode::from_scancode).collect();
 
             let new_keys = &keys - &prev_keys;
@@ -48,11 +82,32 @@ impl Game {
                 println!("{:?} -> {:?}", new_keys, old_keys);
             }
 
-
             prev_keys = keys;
+            //end keyboard detection
+
+            for event in event_pump.poll_iter() {
+                match event {
+                    Event::Quit { .. } => break 'running,
+                    Event::KeyDown { keycode, .. } => {
+                        match keycode {
+                            Some(Keycode::Escape) => break 'running,
+                            Some(Keycode::Up) => player.pos.y -= move_delta,
+                            Some(Keycode::Down) => player.pos.y += move_delta,
+                            Some(Keycode::Left) => player.pos.x -= move_delta,
+                            Some(Keycode::Right) => player.pos.x += move_delta,
+                            _ => {}
+                        }
+                    } // do the thing
+                    _ => {}
+                }
+            }
 
             self.update_title(&mut ticks, renderer);
             renderer.clear();
+            
+            //place texture within purview of renderer
+            renderer.copy(&texture, None, Some(Rect::new(player.pos.x, player.pos.y, 128, 128)));
+
             renderer.present();
         }
     }
