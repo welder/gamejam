@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use sdl2::Sdl;
 use sdl2::render::Renderer;
 use sdl2::pixels::Color;
@@ -27,6 +28,8 @@ impl Game {
         renderer.set_draw_color(Color::RGB(0, 0, 0));
 
         let mut event_pump = context.event_pump().unwrap();
+
+        let mut prev_keys = HashSet::new();
         'running: loop {
             for event in event_pump.poll_iter() {
                 match event {
@@ -35,6 +38,18 @@ impl Game {
                     _ => {}
                 }
             }
+
+            let keys = event_pump.keyboard_state().pressed_scancodes().filter_map(Keycode::from_scancode).collect();
+
+            let new_keys = &keys - &prev_keys;
+            let old_keys = &prev_keys - &keys;
+
+            if !new_keys.is_empty() || !old_keys.is_empty() {
+                println!("{:?} -> {:?}", new_keys, old_keys);
+            }
+
+
+            prev_keys = keys;
 
             self.update_title(&mut ticks, renderer);
             renderer.clear();
