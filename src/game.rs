@@ -37,21 +37,7 @@ impl Game {
                 }
             }
 
-            {
-                let mut window = renderer.window_mut().unwrap();
-                let position = window.position();
-                let size = window.size();
-                let title = format!("{} - pos({}x{}) - size({}x{}) - ticks({})",
-                                    self.title(),
-                                    position.0,
-                                    position.1,
-                                    size.0,
-                                    size.1,
-                                    ticks);
-                window.set_title(&title).unwrap();
-                ticks = ticks + 1;
-            }
-
+            self.update_title(&mut ticks, renderer);
             renderer.set_draw_color(Color::RGB(0, 0, 0));
             renderer.clear();
             renderer.present();
@@ -71,6 +57,21 @@ impl Game {
     /// Get the height of the game window
     pub fn height(&self) -> u32 {
         self.height
+    }
+
+    fn update_title(&self, ticks: &mut u32, renderer: &mut Renderer) {
+        let mut window = renderer.window_mut().unwrap();
+        let position = window.position();
+        let size = window.size();
+        let title = format!("{} - pos({}x{}) - size({}x{}) - ticks({})",
+                            self.title(),
+                            position.0,
+                            position.1,
+                            size.0,
+                            size.1,
+                            ticks);
+        window.set_title(&title).unwrap();
+        *ticks += 1
     }
 }
 
