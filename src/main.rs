@@ -1,8 +1,6 @@
 extern crate sdl2;
-extern crate tiled;
 
 mod game;
-mod grid;
 use game::Game;
 
 fn main() {
