@@ -20,5 +20,8 @@ fn main() {
                               .build()
                               .unwrap();
 
+    let map = grid::open_tiles();
+    println!("{:?}", map);
+
     game.run(&mut context, &mut renderer);
 }
