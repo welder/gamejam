@@ -24,6 +24,8 @@ impl Game {
     /// Run the game
     pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
         let mut ticks = 0;
+        renderer.set_draw_color(Color::RGB(0, 0, 0));
+
         let mut event_pump = context.event_pump().unwrap();
         'running: loop {
             for event in event_pump.poll_iter() {
@@ -38,7 +40,6 @@ impl Game {
             }
 
             self.update_title(&mut ticks, renderer);
-            renderer.set_draw_color(Color::RGB(0, 0, 0));
             renderer.clear();
             renderer.present();
         }
