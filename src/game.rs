@@ -57,9 +57,9 @@ impl Game {
             for y in 0..256 {
                 for x in 0..256 {
                     let offset = y*pitch + x*3;
-                    buffer[offset + 0] = x as u8;
-                    buffer[offset + 1] = y as u8;
-                    buffer[offset + 2] = 0;
+                    buffer[offset + 0] = 255;
+                    buffer[offset + 1] = 255;
+                    buffer[offset + 2] = 255;
                 }
             }
         }).unwrap();
@@ -155,7 +155,7 @@ impl Game {
 
             renderer.present();
 
-            thread::sleep(time::Duration::from_millis(50));
+            thread::sleep(time::Duration::from_millis(35));
         }
     }
 
