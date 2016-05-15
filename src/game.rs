@@ -1,3 +1,5 @@
+extern crate sdl2_ttf;
+
 use std::thread;
 use std::time;
 use sdl2::Sdl;
@@ -7,6 +9,8 @@ use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+
+static FONT_PATH = 
 
 /// Struct for maintaining internal game state
 pub struct Game {
@@ -42,6 +46,7 @@ impl Game {
 
     /// Run the game
     pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
+
         let paddle_width = 16;
         let ball_diameter = 16;
 
@@ -83,6 +88,9 @@ impl Game {
             vel: Velocity { x: 10, y: 2 },
         };
 
+        let ttf_context = sdl2_ttf::init().unwrap();
+        let mut font = ttf_context.load_font(FONT_PATH, 128).unwrap();
+
         let mut event_pump = context.event_pump().unwrap();
         'running: loop {
             for event in event_pump.poll_iter() {
@@ -110,6 +118,7 @@ impl Game {
                    (ball.pos.y < player_one.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
+
                     ball.pos = Position { x: 300, y: 300 };
                 }
             }
@@ -171,6 +180,10 @@ impl Game {
     /// Get the height of the game window
     pub fn height(&self) -> u32 {
         self.height
+    }
+
+    fn update_score(){
+
     }
 
     /// Update the title with position and size information
