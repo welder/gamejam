@@ -1,7 +1,8 @@
 [package]
 name = "game"
 version = "0.1.0"
-authors = ["Andrew Brinker <me@andrewbrinker.com>"]
+authors = ["Andrew Brinker <me@andrewbrinker.com>", "William Elder <will@william-elder.com"]
 
 [dependencies]
 sdl2 = "0.19.0"
+sdl2_ttf = "0.19.0"
