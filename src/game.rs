@@ -45,8 +45,6 @@ impl Game {
         let mut ticks = 0;
         renderer.set_draw_color(Color::RGB(0, 0, 0));
 
-        let mut event_pump = context.event_pump().unwrap();
-
         let mut texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, 256, 256)
                                   .unwrap();
 
@@ -79,8 +77,8 @@ impl Game {
             vel: Velocity { x: 10, y: 2 },
         };
 
+        let mut event_pump = context.event_pump().unwrap();
         'running: loop {
-
             for event in event_pump.poll_iter() {
                 match event {
                     Event::Quit { .. } => break 'running,
