@@ -1,4 +1,6 @@
 use std::collections::HashSet;
+use std::thread;
+use std::time;
 use sdl2::Sdl;
 use sdl2::render::Renderer;
 use sdl2::rect::Rect;
@@ -19,13 +21,14 @@ pub struct Position {
     y: i32,
 }
 
-pub struct Actor {
-    pos: Position,
+pub struct Velocity {
+    x: i32,
+    y: i32
 }
 
-pub struct Direction {
-    x_dir: i32,
-    y_dir: i32
+pub struct Actor {
+    pos: Position,
+    vel: Velocity,
 }
 
 impl Game {
@@ -66,11 +69,18 @@ impl Game {
         let move_delta : i32 = 32;
 
         let mut player_one = Actor{
-            pos: Position {x: 100, y: 100}
+            pos: Position {x: 100, y: 100},
+            vel: Velocity {x: 0, y: 0}
         };
 
         let mut player_two = Actor{
-            pos: Position {x: 500, y: 100}
+            pos: Position {x: 500, y: 100},
+            vel: Velocity {x: 0, y: 0}
+        };
+
+        let mut ball = Actor{
+            pos: Position {x: 300, y: 300},
+            vel: Velocity {x: 10, y: 2}
         };
 
         let mut prev_keys = HashSet::new();
@@ -106,6 +116,33 @@ impl Game {
                 }
             }
 
+            ball.pos.x += ball.vel.x;
+            ball.pos.y += ball.vel.y;
+
+            //left paddle
+            if ball.pos.x < (player_one.pos.x + 16){ // 16 is width
+                if (player_one.pos.y < ball.pos.y - 16) && (ball.pos.y < player_one.pos.y + 128){
+                    ball.vel.x *= -1;
+                } else {
+                    ball.pos = Position{x: 300, y:300};
+                }
+            }
+
+            //right paddle
+            if (player_two.pos.x) < ball.pos.x + 16{ // 16 is width
+                if (player_two.pos.y < ball.pos.y - 16) && (ball.pos.y < player_two.pos.y + 128){
+                    ball.vel.x *= -1;
+                } else {
+                    ball.pos = Position{x: 300, y:300};
+                }
+            }
+
+            //top of screen
+            if (ball.pos.y < 0) || (ball.pos.y > 600 - 16) {
+                ball.vel.y *= -1;
+            }
+
+
             self.update_title(&mut ticks, renderer);
             renderer.clear();
             
@@ -114,7 +151,11 @@ impl Game {
 
             renderer.copy(&texture, None, Some(Rect::new(player_two.pos.x, player_two.pos.y, 16, 128)));
 
+            renderer.copy(&texture, None, Some(Rect::new(ball.pos.x, ball.pos.y, 16, 16)));            
+
             renderer.present();
+
+            thread::sleep(time::Duration::from_millis(50));
         }
     }
 
@@ -131,14 +172,6 @@ impl Game {
     /// Get the height of the game window
     pub fn height(&self) -> u32 {
         self.height
-    }
-
-    fn detect_collision(){
-
-    }
-
-    fn reflect(ball_direction: &mut Direction) {
-        ball_direction.x_dir *= -1;
     }
 
     /// Update the title with position and size information
