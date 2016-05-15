@@ -23,7 +23,7 @@ pub struct Position {
 
 pub struct Velocity {
     x: i32,
-    y: i32
+    y: i32,
 }
 
 pub struct Actor {
@@ -48,46 +48,50 @@ impl Game {
 
         let mut event_pump = context.event_pump().unwrap();
 
-        //begin placeholder square definition
-        let mut texture = renderer.create_texture_streaming(
-            PixelFormatEnum::RGB24, 256, 256).unwrap();
+        // begin placeholder square definition
+        let mut texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, 256, 256)
+                                  .unwrap();
         // Create a red-green gradient
 
         texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
-            for y in 0..256 {
-                for x in 0..256 {
-                    let offset = y*pitch + x*3;
-                    buffer[offset + 0] = 255;
-                    buffer[offset + 1] = 255;
-                    buffer[offset + 2] = 255;
-                }
-            }
-        }).unwrap();
-        //end temporary square definition
+                   for y in 0..256 {
+                       for x in 0..256 {
+                           let offset = y * pitch + x * 3;
+                           buffer[offset + 0] = 255;
+                           buffer[offset + 1] = 255;
+                           buffer[offset + 2] = 255;
+                       }
+                   }
+               })
+               .unwrap();
+        // end temporary square definition
 
-        //positioning variables
-        let move_delta : i32 = 32;
+        // positioning variables
+        let move_delta: i32 = 32;
 
-        let mut player_one = Actor{
-            pos: Position {x: 100, y: 100},
-            vel: Velocity {x: 0, y: 0}
+        let mut player_one = Actor {
+            pos: Position { x: 100, y: 100 },
+            vel: Velocity { x: 0, y: 0 },
         };
 
-        let mut player_two = Actor{
-            pos: Position {x: 500, y: 100},
-            vel: Velocity {x: 0, y: 0}
+        let mut player_two = Actor {
+            pos: Position { x: 500, y: 100 },
+            vel: Velocity { x: 0, y: 0 },
         };
 
-        let mut ball = Actor{
-            pos: Position {x: 300, y: 300},
-            vel: Velocity {x: 10, y: 2}
+        let mut ball = Actor {
+            pos: Position { x: 300, y: 300 },
+            vel: Velocity { x: 10, y: 2 },
         };
 
         let mut prev_keys = HashSet::new();
         'running: loop {
 
-            //keyboard detection
-            let keys = event_pump.keyboard_state().pressed_scancodes().filter_map(Keycode::from_scancode).collect();
+            // keyboard detection
+            let keys = event_pump.keyboard_state()
+                                 .pressed_scancodes()
+                                 .filter_map(Keycode::from_scancode)
+                                 .collect();
 
             let new_keys = &keys - &prev_keys;
             let old_keys = &prev_keys - &keys;
@@ -97,7 +101,7 @@ impl Game {
             }
 
             prev_keys = keys;
-            //end keyboard detection
+            // end keyboard detection
 
             for event in event_pump.poll_iter() {
                 match event {
@@ -119,25 +123,27 @@ impl Game {
             ball.pos.x += ball.vel.x;
             ball.pos.y += ball.vel.y;
 
-            //left paddle
-            if ball.pos.x < (player_one.pos.x + 16){ // 16 is width
-                if (player_one.pos.y < ball.pos.y - 16) && (ball.pos.y < player_one.pos.y + 128){
+            // left paddle
+            if ball.pos.x < (player_one.pos.x + 16) {
+                // 16 is width
+                if (player_one.pos.y < ball.pos.y - 16) && (ball.pos.y < player_one.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
-                    ball.pos = Position{x: 300, y:300};
+                    ball.pos = Position { x: 300, y: 300 };
                 }
             }
 
-            //right paddle
-            if (player_two.pos.x) < ball.pos.x + 16{ // 16 is width
-                if (player_two.pos.y < ball.pos.y - 16) && (ball.pos.y < player_two.pos.y + 128){
+            // right paddle
+            if (player_two.pos.x) < ball.pos.x + 16 {
+                // 16 is width
+                if (player_two.pos.y < ball.pos.y - 16) && (ball.pos.y < player_two.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
-                    ball.pos = Position{x: 300, y:300};
+                    ball.pos = Position { x: 300, y: 300 };
                 }
             }
 
-            //top of screen
+            // top of screen
             if (ball.pos.y < 0) || (ball.pos.y > 600 - 16) {
                 ball.vel.y *= -1;
             }
@@ -145,13 +151,19 @@ impl Game {
 
             self.update_title(&mut ticks, renderer);
             renderer.clear();
-            
-            //place texture within purview of renderer
-            renderer.copy(&texture, None, Some(Rect::new(player_one.pos.x, player_one.pos.y, 16, 128)));
 
-            renderer.copy(&texture, None, Some(Rect::new(player_two.pos.x, player_two.pos.y, 16, 128)));
+            // place texture within purview of renderer
+            renderer.copy(&texture,
+                          None,
+                          Some(Rect::new(player_one.pos.x, player_one.pos.y, 16, 128)));
 
-            renderer.copy(&texture, None, Some(Rect::new(ball.pos.x, ball.pos.y, 16, 16)));            
+            renderer.copy(&texture,
+                          None,
+                          Some(Rect::new(player_two.pos.x, player_two.pos.y, 16, 128)));
+
+            renderer.copy(&texture,
+                          None,
+                          Some(Rect::new(ball.pos.x, ball.pos.y, 16, 16)));
 
             renderer.present();
 
