@@ -43,6 +43,9 @@ impl Game {
 
     /// Run the game
     pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
+        let paddle_width: i32 = 16;
+        let ball_diameter: i32 = 16;
+
         let mut ticks = 0;
         renderer.set_draw_color(Color::RGB(0, 0, 0));
 
@@ -75,7 +78,7 @@ impl Game {
         };
 
         let mut player_two = Actor {
-            pos: Position { x: 734, y: 100 },
+            pos: Position { x: 750 - paddle_width, y: 100 },
             vel: Velocity { x: 0, y: 0 },
         };
 
@@ -124,9 +127,9 @@ impl Game {
             ball.pos.y += ball.vel.y;
 
             // left paddle
-            if ball.pos.x < (player_one.pos.x + 16) {
+            if ball.pos.x < (player_one.pos.x + ball_diameter) {
                 // 16 is width
-                if (player_one.pos.y < ball.pos.y - 16) && (ball.pos.y < player_one.pos.y + 128) {
+                if (player_one.pos.y < ball.pos.y - ball_diameter) && (ball.pos.y < player_one.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
                     ball.pos = Position { x: 300, y: 300 };
@@ -136,7 +139,7 @@ impl Game {
             // right paddle
             if (player_two.pos.x) < ball.pos.x + 16 {
                 // 16 is width
-                if (player_two.pos.y < ball.pos.y - 16) && (ball.pos.y < player_two.pos.y + 128) {
+                if (player_two.pos.y < ball.pos.y - ball_diameter) && (ball.pos.y < player_two.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
                     ball.pos = Position { x: 300, y: 300 };
@@ -144,7 +147,7 @@ impl Game {
             }
 
             // top of screen
-            if (ball.pos.y < 0) || (ball.pos.y > 600 - 16) {
+            if (ball.pos.y < 0) || (ball.pos.y > 600 - ball_diameter) {
                 ball.vel.y *= -1;
             }
 
@@ -155,15 +158,15 @@ impl Game {
             // place texture within purview of renderer
             renderer.copy(&texture,
                           None,
-                          Some(Rect::new(player_one.pos.x, player_one.pos.y, 16, 128)));
+                          Some(Rect::new(player_one.pos.x, player_one.pos.y, paddle_width, 128)));
 
             renderer.copy(&texture,
                           None,
-                          Some(Rect::new(player_two.pos.x, player_two.pos.y, 16, 128)));
+                          Some(Rect::new(player_two.pos.x, player_two.pos.y, paddle_width, 128)));
 
             renderer.copy(&texture,
                           None,
-                          Some(Rect::new(ball.pos.x, ball.pos.y, 16, 16)));
+                          Some(Rect::new(ball.pos.x, ball.pos.y, ball_diameter, ball_diameter)));
 
             renderer.present();
 
