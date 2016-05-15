@@ -16,13 +16,13 @@ pub struct Game {
 }
 
 pub struct Position {
-    x: i32,
-    y: i32,
+    x: u32,
+    y: u32,
 }
 
 pub struct Velocity {
-    x: i32,
-    y: i32,
+    x: u32,
+    y: u32,
 }
 
 pub struct Actor {
@@ -42,8 +42,8 @@ impl Game {
 
     /// Run the game
     pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
-        let paddle_width: i32 = 16;
-        let ball_diameter: i32 = 16;
+        let paddle_width: u32 = 16;
+        let ball_diameter: u32 = 16;
 
         let mut ticks = 0;
         renderer.set_draw_color(Color::RGB(0, 0, 0));
@@ -63,7 +63,7 @@ impl Game {
                })
                .unwrap();
 
-        let move_delta: i32 = 32;
+        let move_delta: u32 = 32;
 
         let mut player_one = Actor {
             pos: Position { x: 50, y: 100 },
