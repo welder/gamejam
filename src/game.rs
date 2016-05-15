@@ -70,12 +70,12 @@ impl Game {
         let move_delta: i32 = 32;
 
         let mut player_one = Actor {
-            pos: Position { x: 100, y: 100 },
+            pos: Position { x: 50, y: 100 },
             vel: Velocity { x: 0, y: 0 },
         };
 
         let mut player_two = Actor {
-            pos: Position { x: 500, y: 100 },
+            pos: Position { x: 734, y: 100 },
             vel: Velocity { x: 0, y: 0 },
         };
 
