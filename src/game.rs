@@ -16,13 +16,13 @@ pub struct Game {
 }
 
 pub struct Position {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
 }
 
 pub struct Velocity {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
 }
 
 pub struct Actor {
@@ -42,8 +42,8 @@ impl Game {
 
     /// Run the game
     pub fn run(self, context: &mut Sdl, renderer: &mut Renderer) {
-        let paddle_width: u32 = 16;
-        let ball_diameter: u32 = 16;
+        let paddle_width = 16;
+        let ball_diameter = 16;
 
         let mut ticks = 0;
         renderer.set_draw_color(Color::RGB(0, 0, 0));
@@ -63,7 +63,7 @@ impl Game {
                })
                .unwrap();
 
-        let move_delta: u32 = 32;
+        let move_delta = 32;
 
         let mut player_one = Actor {
             pos: Position { x: 50, y: 100 },
@@ -71,7 +71,10 @@ impl Game {
         };
 
         let mut player_two = Actor {
-            pos: Position { x: 750 - paddle_width, y: 100 },
+            pos: Position {
+                x: 750 - paddle_width,
+                y: 100,
+            },
             vel: Velocity { x: 0, y: 0 },
         };
 
@@ -103,7 +106,8 @@ impl Game {
             ball.pos.y += ball.vel.y;
 
             if ball.pos.x < (player_one.pos.x + ball_diameter) {
-                if (player_one.pos.y < ball.pos.y - ball_diameter) && (ball.pos.y < player_one.pos.y + 128) {
+                if (player_one.pos.y < ball.pos.y - ball_diameter) &&
+                   (ball.pos.y < player_one.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
                     ball.pos = Position { x: 300, y: 300 };
@@ -111,7 +115,8 @@ impl Game {
             }
 
             if (player_two.pos.x) < ball.pos.x + 16 {
-                if (player_two.pos.y < ball.pos.y - ball_diameter) && (ball.pos.y < player_two.pos.y + 128) {
+                if (player_two.pos.y < ball.pos.y - ball_diameter) &&
+                   (ball.pos.y < player_two.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
                     ball.pos = Position { x: 300, y: 300 };
@@ -128,15 +133,24 @@ impl Game {
 
             renderer.copy(&texture,
                           None,
-                          Some(Rect::new(player_one.pos.x, player_one.pos.y, paddle_width, 128)));
+                          Some(Rect::new(player_one.pos.x,
+                                         player_one.pos.y,
+                                         paddle_width as u32,
+                                         128)));
 
             renderer.copy(&texture,
                           None,
-                          Some(Rect::new(player_two.pos.x, player_two.pos.y, paddle_width, 128)));
+                          Some(Rect::new(player_two.pos.x,
+                                         player_two.pos.y,
+                                         paddle_width as u32,
+                                         128)));
 
             renderer.copy(&texture,
                           None,
-                          Some(Rect::new(ball.pos.x, ball.pos.y, ball_diameter, ball_diameter)));
+                          Some(Rect::new(ball.pos.x,
+                                         ball.pos.y,
+                                         ball_diameter as u32,
+                                         ball_diameter as u32)));
 
             renderer.present();
 
@@ -160,7 +174,7 @@ impl Game {
     }
 
     /// Update the title with position and size information
-    fn update_title(&self, ticks: &mut u32, renderer: &mut Renderer) {
+    fn update_title(&self, ticks: &mut i32, renderer: &mut Renderer) {
         let mut window = renderer.window_mut().unwrap();
         let position = window.position();
         let size = window.size();
