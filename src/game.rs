@@ -6,6 +6,7 @@ use std::path;
 use sdl2::Sdl;
 use sdl2::render::Renderer;
 use sdl2::render::Texture;
+use sdl2::render::TextureValueError;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
@@ -39,6 +40,12 @@ pub struct Actor {
     vel: Velocity,
     texture: Texture,
     score: u32
+}
+
+pub fn update_score_texture(font: &sdl2_ttf::Font, score: u32, renderer: &Renderer) -> Texture {
+    let surface = font.render(&(score.to_string()))
+        .blended(Color::RGBA(255,0,0,255)).unwrap();
+    renderer.create_texture_from_surface(&surface).unwrap()
 }
 
 impl Game {
@@ -132,13 +139,9 @@ impl Game {
         let path_to_font  = path::Path::new("resources/LiberationSans-Regular.ttf");
         let font = ttf_context.load_font(&path_to_font, 32).unwrap();
 
-        let score_1_surface = font.render(&(player_one.score.to_string()))
-            .blended(Color::RGBA(255,0,0,255)).unwrap();
-        let mut score_1_texture = renderer.create_texture_from_surface(&score_1_surface).unwrap();
+        let mut score_1_texture = update_score_texture(&font, player_one.score, renderer);
 
-        let score_2_surface = font.render(&(player_two.score.to_string()))
-            .blended(Color::RGBA(255,0,0,255)).unwrap();
-        let mut score_2_texture = renderer.create_texture_from_surface(&score_2_surface).unwrap();
+        let mut score_2_texture = update_score_texture(&font, player_two.score, renderer);
 
         let mut event_pump = context.event_pump().unwrap();
         'running: loop {
@@ -172,10 +175,7 @@ impl Game {
                     ball.vel = Velocity { x: 0,   y: 0 };
                     ball.pos = Position { x: 300, y: 300 };
                     player_two.score += 1;
-
-                    let score_2_surface = font.render(&(player_two.score.to_string()))
-                    .blended(Color::RGBA(255,0,0,255)).unwrap();
-                    score_2_texture = renderer.create_texture_from_surface(&score_2_surface).unwrap();
+                    score_2_texture = update_score_texture(&font, player_two.score, renderer);
                 }
             }
 
@@ -187,10 +187,7 @@ impl Game {
                     ball.vel = Velocity { x: 0,   y: 0 };
                     ball.pos = Position { x: 300, y: 300 };
                     player_one.score +=1;
-
-                    let score_1_surface = font.render(&(player_one.score.to_string()))
-                    .blended(Color::RGBA(255,0,0,255)).unwrap();
-                    score_1_texture = renderer.create_texture_from_surface(&score_1_surface).unwrap();
+                    score_1_texture = update_score_texture(&font, player_one.score, renderer);
                 }
             }
 
