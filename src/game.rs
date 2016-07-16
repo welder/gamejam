@@ -38,6 +38,7 @@ pub struct Actor {
     pos: Position,
     vel: Velocity,
     texture: Texture,
+    score: u32
 }
 
 impl Game {
@@ -110,27 +111,34 @@ impl Game {
             pos: Position { x: 50, y: 100 },
             vel: Velocity { x: 0, y: 0 },
             texture: left_paddle_texture,
+            score: 0,
         };
 
         let mut player_two = Actor {
             pos: Position {x: 750 - paddle_width, y: 100},
             vel: Velocity { x: 0, y: 0 },
             texture: right_paddle_texture,
+            score: 0,
         };
 
         let mut ball = Actor {
             pos: Position { x: 300, y: 300 },
             vel: Velocity { x: 10, y: 2 },
-            texture: ball_texture
+            texture: ball_texture,
+            score: 0
         };
 
         let ttf_context = sdl2_ttf::init().unwrap();
         let path_to_font  = path::Path::new("resources/LiberationSans-Regular.ttf");
         let font = ttf_context.load_font(&path_to_font, 32).unwrap();
 
-        let score_1_surface = font.render("0")
+        let score_1_surface = font.render(&(player_one.score.to_string()))
             .blended(Color::RGBA(255,0,0,255)).unwrap();
         let mut score_1_texture = renderer.create_texture_from_surface(&score_1_surface).unwrap();
+
+        let score_2_surface = font.render(&(player_two.score.to_string()))
+            .blended(Color::RGBA(255,0,0,255)).unwrap();
+        let mut score_2_texture = renderer.create_texture_from_surface(&score_2_surface).unwrap();
 
         let mut event_pump = context.event_pump().unwrap();
         'running: loop {
@@ -163,6 +171,11 @@ impl Game {
                 } else {
                     ball.vel = Velocity { x: 0,   y: 0 };
                     ball.pos = Position { x: 300, y: 300 };
+                    player_two.score += 1;
+
+                    let score_2_surface = font.render(&(player_two.score.to_string()))
+                    .blended(Color::RGBA(255,0,0,255)).unwrap();
+                    score_2_texture = renderer.create_texture_from_surface(&score_2_surface).unwrap();
                 }
             }
 
@@ -173,6 +186,11 @@ impl Game {
                 } else {
                     ball.vel = Velocity { x: 0,   y: 0 };
                     ball.pos = Position { x: 300, y: 300 };
+                    player_one.score +=1;
+
+                    let score_1_surface = font.render(&(player_one.score.to_string()))
+                    .blended(Color::RGBA(255,0,0,255)).unwrap();
+                    score_1_texture = renderer.create_texture_from_surface(&score_1_surface).unwrap();
                 }
             }
 
@@ -208,6 +226,10 @@ impl Game {
             renderer.copy(&mut score_1_texture,
                           None, 
                           Some(Rect::new(player_one.pos.x, 10, 32, 64)));
+
+            renderer.copy(&mut score_2_texture,
+                          None, 
+                          Some(Rect::new(player_two.pos.x, 10, 32, 64)));
             
             renderer.present();
 
