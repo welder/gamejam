@@ -6,7 +6,6 @@ use std::path;
 use sdl2::Sdl;
 use sdl2::render::Renderer;
 use sdl2::render::Texture;
-use sdl2::render::TextureValueError;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
@@ -18,6 +17,10 @@ macro_rules! rect(
         Rect::new($x as i32, $y as i32, $w as u32, $h as u32)
     )
 );
+
+static WINDOW_WIDTH: u32 = 800;
+static WINDOW_HEIGHT: u32 = 600;
+
 /// Struct for maintaining internal game state
 pub struct Game {
     title: String,
@@ -53,8 +56,8 @@ impl Game {
     pub fn new() -> Game {
         Game {
             title: "Endless Tactics".to_owned(),
-            width: 800,
-            height: 600,
+            width: WINDOW_WIDTH,
+            height: WINDOW_HEIGHT,
         }
     }
 
@@ -65,6 +68,9 @@ impl Game {
         let ball_diameter = 16;
 
         let mut ticks = 0;
+
+        let mut _left_player_starts = true;
+
         renderer.set_draw_color(Color::RGB(0, 0, 0));
 
         let mut left_paddle_texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, 256, 256)
@@ -112,7 +118,7 @@ impl Game {
                })
                .unwrap();
 
-        let move_delta = 32;
+        let paddle_move_delta = 32;
 
         let mut player_one = Actor {
             pos: Position { x: 50, y: 100 },
@@ -122,14 +128,14 @@ impl Game {
         };
 
         let mut player_two = Actor {
-            pos: Position {x: 750 - paddle_width, y: 100},
+            pos: Position {x: ((self.width() as i32) - 50) - paddle_width, y: 100 },
             vel: Velocity { x: 0, y: 0 },
             texture: right_paddle_texture,
             score: 0,
         };
 
         let mut ball = Actor {
-            pos: Position { x: 300, y: 300 },
+            pos: Position { x: (self.width() as i32)/2, y: (self.height() as i32)/2 },
             vel: Velocity { x: 10, y: 2 },
             texture: ball_texture,
             score: 0
@@ -151,12 +157,14 @@ impl Game {
                     Event::KeyDown { keycode, .. } => {
                         match keycode {
                             Some(Keycode::Escape) => break 'running,
-                            Some(Keycode::W) => player_one.pos.y -= move_delta,
-                            Some(Keycode::S) => player_one.pos.y += move_delta,
-                            Some(Keycode::Up) => player_two.pos.y -= move_delta,
-                            Some(Keycode::Down) => player_two.pos.y += move_delta,
+                            Some(Keycode::W) => player_one.pos.y -= paddle_move_delta,
+                            Some(Keycode::S) => player_one.pos.y += paddle_move_delta,
+                            Some(Keycode::Up) => player_two.pos.y -= paddle_move_delta,
+                            Some(Keycode::Down) => player_two.pos.y += paddle_move_delta,
                             Some(Keycode::Space) => if ball.vel.x == 0 && ball.vel.y == 0 
-                                                        {ball.vel = Velocity { x: 10, y: 2}},
+                                                        {
+                                                            ball.vel = Velocity { x: 10, y: 2};
+                                                        },
                             _ => {}
                         }
                     }
@@ -176,6 +184,7 @@ impl Game {
                     ball.pos = Position { x: 300, y: 300 };
                     player_two.score += 1;
                     score_2_texture = update_score_texture(&font, player_two.score, renderer);
+                    _left_player_starts = true;
                 }
             }
 
@@ -188,6 +197,7 @@ impl Game {
                     ball.pos = Position { x: 300, y: 300 };
                     player_one.score +=1;
                     score_1_texture = update_score_texture(&font, player_one.score, renderer);
+                    _left_player_starts = false;
                 }
             }
 
