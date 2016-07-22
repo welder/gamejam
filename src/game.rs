@@ -123,7 +123,7 @@ impl Game {
                     })
                     .unwrap();
 
-        let paddle_move_delta = 32;
+        let move_delta = 32;
 
         let mut player_one = Actor {
             pos: Position { x: 50, y: 100 },
@@ -144,7 +144,10 @@ impl Game {
         };
 
         let mut ball = Actor {
-            pos: Position { x: (self.width() as i32)/2, y: (self.height() as i32)/2 },
+            pos: Position {
+                x: (self.width() as i32) / 2,
+                y: (self.height() as i32) / 2,
+            },
             vel: Velocity { x: 10, y: 2 },
             texture: ball_texture,
             score: 0,
