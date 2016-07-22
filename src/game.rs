@@ -6,7 +6,6 @@ use std::path;
 use sdl2::Sdl;
 use sdl2::render::Renderer;
 use sdl2::render::Texture;
-use sdl2::render::TextureValueError;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
@@ -39,12 +38,13 @@ pub struct Actor {
     pos: Position,
     vel: Velocity,
     texture: Texture,
-    score: u32
+    score: u32,
 }
 
 pub fn update_score_texture(font: &sdl2_ttf::Font, score: u32, renderer: &Renderer) -> Texture {
     let surface = font.render(&(score.to_string()))
-        .blended(Color::RGBA(255,0,0,255)).unwrap();
+                      .blended(Color::RGBA(255, 0, 0, 255))
+                      .unwrap();
     renderer.create_texture_from_surface(&surface).unwrap()
 }
 
@@ -67,50 +67,54 @@ impl Game {
         let mut ticks = 0;
         renderer.set_draw_color(Color::RGB(0, 0, 0));
 
-        let mut left_paddle_texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, 256, 256)
-                                  .unwrap();
+        let mut left_paddle_texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24,
+                                                                        256,
+                                                                        256)
+                                              .unwrap();
 
         left_paddle_texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                   for y in 0..256 {
-                       for x in 0..256 {
-                           let offset = y * pitch + x * 3;
-                           buffer[offset + 0] = 255;
-                           buffer[offset + 1] = 255;
-                           buffer[offset + 2] = 255;
-                       }
-                   }
-               })
-               .unwrap();
+                               for y in 0..256 {
+                                   for x in 0..256 {
+                                       let offset = y * pitch + x * 3;
+                                       buffer[offset + 0] = 255;
+                                       buffer[offset + 1] = 255;
+                                       buffer[offset + 2] = 255;
+                                   }
+                               }
+                           })
+                           .unwrap();
 
-        let mut right_paddle_texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, 256, 256)
-                                  .unwrap();
+        let mut right_paddle_texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24,
+                                                                         256,
+                                                                         256)
+                                               .unwrap();
 
         right_paddle_texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                   for y in 0..256 {
-                       for x in 0..256 {
-                           let offset = y * pitch + x * 3;
-                           buffer[offset + 0] = 255;
-                           buffer[offset + 1] = 255;
-                           buffer[offset + 2] = 255;
-                       }
-                   }
-               })
-               .unwrap();
+                                for y in 0..256 {
+                                    for x in 0..256 {
+                                        let offset = y * pitch + x * 3;
+                                        buffer[offset + 0] = 255;
+                                        buffer[offset + 1] = 255;
+                                        buffer[offset + 2] = 255;
+                                    }
+                                }
+                            })
+                            .unwrap();
 
         let mut ball_texture = renderer.create_texture_streaming(PixelFormatEnum::RGB24, 256, 256)
-                                  .unwrap();
+                                       .unwrap();
 
         ball_texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                   for y in 0..256 {
-                       for x in 0..256 {
-                           let offset = y * pitch + x * 3;
-                           buffer[offset + 0] = 255;
-                           buffer[offset + 1] = 255;
-                           buffer[offset + 2] = 255;
-                       }
-                   }
-               })
-               .unwrap();
+                        for y in 0..256 {
+                            for x in 0..256 {
+                                let offset = y * pitch + x * 3;
+                                buffer[offset + 0] = 255;
+                                buffer[offset + 1] = 255;
+                                buffer[offset + 2] = 255;
+                            }
+                        }
+                    })
+                    .unwrap();
 
         let move_delta = 32;
 
@@ -122,7 +126,10 @@ impl Game {
         };
 
         let mut player_two = Actor {
-            pos: Position {x: 750 - paddle_width, y: 100},
+            pos: Position {
+                x: 750 - paddle_width,
+                y: 100,
+            },
             vel: Velocity { x: 0, y: 0 },
             texture: right_paddle_texture,
             score: 0,
@@ -132,11 +139,11 @@ impl Game {
             pos: Position { x: 300, y: 300 },
             vel: Velocity { x: 10, y: 2 },
             texture: ball_texture,
-            score: 0
+            score: 0,
         };
 
         let ttf_context = sdl2_ttf::init().unwrap();
-        let path_to_font  = path::Path::new("resources/LiberationSans-Regular.ttf");
+        let path_to_font = path::Path::new("resources/LiberationSans-Regular.ttf");
         let font = ttf_context.load_font(&path_to_font, 32).unwrap();
 
         let mut score_1_texture = update_score_texture(&font, player_one.score, renderer);
@@ -155,8 +162,11 @@ impl Game {
                             Some(Keycode::S) => player_one.pos.y += move_delta,
                             Some(Keycode::Up) => player_two.pos.y -= move_delta,
                             Some(Keycode::Down) => player_two.pos.y += move_delta,
-                            Some(Keycode::Space) => if ball.vel.x == 0 && ball.vel.y == 0 
-                                                        {ball.vel = Velocity { x: 10, y: 2}},
+                            Some(Keycode::Space) => {
+                                if ball.vel.x == 0 && ball.vel.y == 0 {
+                                    ball.vel = Velocity { x: 10, y: 2 }
+                                }
+                            }
                             _ => {}
                         }
                     }
@@ -172,7 +182,7 @@ impl Game {
                    (ball.pos.y < player_one.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
-                    ball.vel = Velocity { x: 0,   y: 0 };
+                    ball.vel = Velocity { x: 0, y: 0 };
                     ball.pos = Position { x: 300, y: 300 };
                     player_two.score += 1;
                     score_2_texture = update_score_texture(&font, player_two.score, renderer);
@@ -184,9 +194,9 @@ impl Game {
                    (ball.pos.y < player_two.pos.y + 128) {
                     ball.vel.x *= -1;
                 } else {
-                    ball.vel = Velocity { x: 0,   y: 0 };
+                    ball.vel = Velocity { x: 0, y: 0 };
                     ball.pos = Position { x: 300, y: 300 };
-                    player_one.score +=1;
+                    player_one.score += 1;
                     score_1_texture = update_score_texture(&font, player_one.score, renderer);
                 }
             }
@@ -221,13 +231,13 @@ impl Game {
                                          ball_diameter as u32)));
 
             renderer.copy(&mut score_1_texture,
-                          None, 
+                          None,
                           Some(Rect::new(player_one.pos.x, 10, 32, 64)));
 
             renderer.copy(&mut score_2_texture,
-                          None, 
+                          None,
                           Some(Rect::new(player_two.pos.x, 10, 32, 64)));
-            
+
             renderer.present();
 
             thread::sleep(time::Duration::from_millis(35));
